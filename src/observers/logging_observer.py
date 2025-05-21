@@ -8,4 +8,4 @@ class LoggingObserver(PasswordObserver):
         self.logger = logging.getLogger("PasswordGenerator")
 
     def on_password_generated(self, password: str, strength: str):
-        self.logger.info(f"Nova senha gerada: {password} (Força: {strength})")
+            print(f"Nova senha gerada: {password} (Força: {strength})")

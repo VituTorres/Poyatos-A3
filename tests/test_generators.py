@@ -39,19 +39,22 @@ if __name__ == "__main__":
 
 # tests/test_observers.py
 import unittest
-from io import StringIO
-import sys
+from unittest.mock import patch
 from src.observers.logging_observer import LoggingObserver
 
 class TestLoggingObserver(unittest.TestCase):
-    def setUp(self):
-        self.held_output = StringIO()
-        sys.stdout = self.held_output
-
-    def test_logging(self):
+    @patch('builtins.print')  # Mock da função print
+    def test_logging(self, mock_print):
+        """Testa se o observer registra no log corretamente"""
         observer = LoggingObserver()
-        observer.on_password_generated("test123", "Medium")
-        self.assertIn("Nova senha gerada", self.held_output.getvalue())
-
-    def tearDown(self):
-        sys.stdout = sys.__stdout__    
+        test_password = "test123"
+        test_strength = "Medium"
+        
+        observer.on_password_generated(test_password, test_strength)
+        
+        # Verifica se print foi chamado com os valores esperados
+        mock_print.assert_called_once()
+        args, _ = mock_print.call_args
+        self.assertIn("Nova senha gerada", args[0])
+        self.assertIn(test_password, args[0])
+        self.assertIn(test_strength, args[0])

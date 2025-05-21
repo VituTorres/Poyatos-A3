@@ -1,29 +1,23 @@
+# src/generators/basic_generator.py
 import random
 import string
 from .base_generator import PasswordGenerator
 
-class StrongGenerator(PasswordGenerator):
-    """Gerador de senhas fortes com caracteres especiais."""
+class BasicGenerator(PasswordGenerator):
+    """Gerador de senhas básicas (letras e números) com suporte a Observer"""
+    
     def __init__(self):
-        super().__init__()
-        self.characters = string.ascii_letters + string.digits + string.punctuation
+        super().__init__()  # Chama o __init__ da classe base (importante para observers)
+        self.characters = string.ascii_letters + string.digits
 
-    def generate(self, length: int = 12) -> str:
-        """Gera uma senha forte garantindo pelo menos um caractere de cada tipo."""
-        if length < 8:
-            raise ValueError("Strong password must be at least 8 characters")
+    def generate(self, length: int = 8) -> str:
+        """Gera uma senha básica e notifica os observers"""
+        if length < 4:
+            raise ValueError("Password length must be at least 4 characters")
         
-        password = [
-            random.choice(string.ascii_lowercase),
-            random.choice(string.ascii_uppercase),
-            random.choice(string.digits),
-            random.choice(string.punctuation)
-        ]
-        password.extend(random.choice(self.characters) for _ in range(length-4))
-        random.shuffle(password)
-        password_str = ''.join(password)
-        self._notify_observers(password_str)
-        return password_str
+        password = ''.join(random.choice(self.characters) for _ in range(length))
+        self._notify_observers(password)  # Notifica todos os observers
+        return password
 
     def get_strength(self) -> str:
-        return "Strong"
+        return "Medium"
