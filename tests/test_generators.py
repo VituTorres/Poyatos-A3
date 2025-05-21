@@ -1,16 +1,19 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent / "src"))
 import unittest
-from generators.basic_generator import BasicPasswordGenerator
-from generators.strong_generator import StrongPasswordGenerator
+from generators.basic_generator import BasicGenerator
+from generators.strong_generator import StrongGenerator
 
 class TestPasswordGenerators(unittest.TestCase):
     def test_basic_generator(self):
-        generator = BasicPasswordGenerator()
+        generator = BasicGenerator()
         password = generator.generate(8)
         self.assertEqual(len(password), 8)
         self.assertEqual(generator.get_strength(), "Medium")
     
     def test_strong_generator(self):
-        generator = StrongPasswordGenerator()
+        generator = StrongGenerator()
         password = generator.generate(12)
         self.assertEqual(len(password), 12)
         self.assertEqual(generator.get_strength(), "Strong")
