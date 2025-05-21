@@ -2,8 +2,12 @@ import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent / "src"))
 import unittest
+from unittest.mock import Mock
 from generators.basic_generator import BasicGenerator
 from generators.strong_generator import StrongGenerator
+from generators.base_generator import PasswordGenerator
+from generators.factory import create_generator
+from observers.password_observer import PasswordObserver
 
 class TestPasswordGenerators(unittest.TestCase):
     def test_basic_generator(self):
@@ -18,43 +22,45 @@ class TestPasswordGenerators(unittest.TestCase):
         self.assertEqual(len(password), 12)
         self.assertEqual(generator.get_strength(), "Strong")
 
-# tests/test_validator.py
-import unittest
-from validators.password_validator import PasswordValidator
+class ConcreteGenerator(PasswordGenerator):
+    """Implementação concreta do PasswordGenerator para testes"""
+    def generate(self, length: int) -> str:
+        return "test" * (length // 4)
+    
+    def get_strength(self) -> str:
+        return "Test"
 
-class TestPasswordValidator(unittest.TestCase):
-    def test_validation(self):
-        test_cases = [
-            ("Abc123!", {'length': False, 'has_upper': True, 'has_lower': True, 'has_digit': True, 'has_special': True}),
-            ("Abcdefgh", {'length': True, 'has_upper': True, 'has_lower': True, 'has_digit': False, 'has_special': False}),
-            ("12345678", {'length': True, 'has_upper': False, 'has_lower': False, 'has_digit': True, 'has_special': False}),
-        ]
-        
-        for password, expected in test_cases:
-            with self.subTest(password=password):
-                self.assertEqual(PasswordValidator.validate(password), expected)
+class TestBaseGenerator(unittest.TestCase):
+    def setUp(self):
+        self.generator = ConcreteGenerator()
+        self.mock_observer = Mock(spec=PasswordObserver)
 
-if __name__ == "__main__":
+    def test_add_observer(self):
+        """Testa a adição de um observador ao gerador"""
+        self.generator.add_observer(self.mock_observer)
+        self.assertIn(self.mock_observer, self.generator._observers)
+
+    def test_abstract_class_instantiation(self):
+        """Testa que PasswordGenerator não pode ser instanciado diretamente"""
+        with self.assertRaises(TypeError):
+            PasswordGenerator()
+
+class TestFactory(unittest.TestCase):
+    def test_create_basic_generator(self):
+        """Testa a criação de um gerador básico"""
+        generator = create_generator('basic')
+        self.assertIsInstance(generator, BasicGenerator)
+
+    def test_create_strong_generator(self):
+        """Testa a criação de um gerador forte"""
+        generator = create_generator('strong')
+        self.assertIsInstance(generator, StrongGenerator)
+
+    def test_invalid_generator_type(self):
+        """Testa o tratamento de erro para tipo de gerador inválido"""
+        with self.assertRaises(ValueError) as context:
+            create_generator('invalid')
+        self.assertIn('Tipo de gerador inválido', str(context.exception))
+
+if __name__ == '__main__':
     unittest.main()
-
-# tests/test_observers.py
-import unittest
-from unittest.mock import patch
-from src.observers.logging_observer import LoggingObserver
-
-class TestLoggingObserver(unittest.TestCase):
-    @patch('builtins.print')  # Mock da função print
-    def test_logging(self, mock_print):
-        """Testa se o observer registra no log corretamente"""
-        observer = LoggingObserver()
-        test_password = "test123"
-        test_strength = "Medium"
-        
-        observer.on_password_generated(test_password, test_strength)
-        
-        # Verifica se print foi chamado com os valores esperados
-        mock_print.assert_called_once()
-        args, _ = mock_print.call_args
-        self.assertIn("Nova senha gerada", args[0])
-        self.assertIn(test_password, args[0])
-        self.assertIn(test_strength, args[0])
