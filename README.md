@@ -1,4 +1,4 @@
-# Poyatos-A3: GESTÃO E QUALIDADE DE SOFTWARE
+# A3 GESTÃO E QUALIDADE DE SOFTWARE
 
 ## Professores
 - Henrique Poyatos  
