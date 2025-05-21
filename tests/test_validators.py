@@ -8,7 +8,7 @@ class TestPasswordValidator(unittest.TestCase):
         validation = PasswordValidator.validate(password)
         self.assertTrue(all(validation.values()))
         message = PasswordValidator.get_validation_message(validation)
-        self.assertEqual(message, "Password is very strong")
+        self.assertEqual(message, "a senha é forte")
 
     def test_validate_weak_password(self):
         """Testa a validação de uma senha fraca que não atende a múltiplos critérios"""
@@ -23,17 +23,17 @@ class TestPasswordValidator(unittest.TestCase):
         }
         self.assertEqual(validation, expected)
         message = PasswordValidator.get_validation_message(validation)
-        self.assertIn("at least 8 characters", message)
-        self.assertIn("uppercase letter", message)
-        self.assertIn("digit", message)
-        self.assertIn("special character", message)
+        self.assertIn("pelo menos 8 caracteres", message)
+        self.assertIn("letra maiúscula", message)
+        self.assertIn("dígito", message)
+        self.assertIn("caractere especial", message)
 
     def test_validate_partial_requirements(self):
         """Testa a validação de senhas que atendem alguns, mas não todos os critérios"""
         test_cases = [
-            ("Password123", ['special character']),  # Missing special char
-            ("pass@word", ['uppercase letter', 'digit']),  # Missing upper and digit
-            ("12345678@", ['uppercase letter', 'lowercase letter']),  # Missing letters
+            ("Password123", ['caractere especial']),  # Missing special char
+            ("pass@word", ['letra maiúscula', 'dígito']),  # Missing upper and digit
+            ("12345678@", ['letra maiúscula', 'letra minúscula']),  # Missing letters
         ]
         
         for password, expected_missing in test_cases:

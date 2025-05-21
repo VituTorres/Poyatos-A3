@@ -14,13 +14,13 @@ class PasswordValidator:
     @staticmethod
     def get_validation_message(validation: dict) -> str:
         if all(validation.values()):
-            return "Password is very strong"
+            return "a senha é forte"
         
         missing = []
-        if not validation['length']: missing.append("at least 8 characters")
-        if not validation['has_upper']: missing.append("uppercase letter")
-        if not validation['has_lower']: missing.append("lowercase letter")
-        if not validation['has_digit']: missing.append("digit")
-        if not validation['has_special']: missing.append("special character")
+        if not validation['length']: missing.append("pelo menos 8 caracteres")
+        if not validation['has_upper']: missing.append("letra maiúscula")
+        if not validation['has_lower']: missing.append("letra minúscula")
+        if not validation['has_digit']: missing.append("dígito")
+        if not validation['has_special']: missing.append("caractere especial")
         
-        return "Password missing: " + ", ".join(missing)
+        return "Senha faltando: " + ", ".join(missing)
