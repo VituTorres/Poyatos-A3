@@ -1,45 +1,45 @@
-from generators.factory import GeneratorFactory
+from generators.factory import create_generator
 from validators.password_validator import PasswordValidator
+from observers.logging_observer import LoggingObserver
 
-def get_valid_input(prompt, validation_func, error_message):
+def get_valid_input(prompt: str, validator, error_msg: str):
+    """Obtém entrada do usuário com validação."""
     while True:
         try:
-            user_input = input(prompt).strip().lower()
-            if validation_func(user_input):
-                return user_input
-            print(error_message)
+            value = input(prompt).strip()
+            if validator(value):
+                return value
+            print(error_msg)
         except ValueError:
-            print("Por favor, insira um valor válido.")
+            print("Entrada inválida. Tente novamente.")
 
 def main():
-    print("=== Password Generator ===")
-    print("Options: basic, strong")
+    print("=== Gerador de Senhas Refatorado ===")
     
-    # Validação do tipo de gerador
-    generator_type = get_valid_input(
-        "Generator type (basic/strong): ",
-        lambda x: x in ['basic', 'strong'],
-        "Erro: Digite 'basic' ou 'strong'"
+    # Configura observers
+    generator = create_generator(
+        get_valid_input(
+            "Tipo (basic/strong): ",
+            lambda x: x.lower() in ['basic', 'strong'],
+            "Digite 'basic' ou 'strong'"
+        )
     )
-    
-    # Validação do comprimento
-    length = int(get_valid_input(
-        "Length (8-20): ",
-        lambda x: x.isdigit() and 8 <= int(x) <= 20,
-        "Erro: Digite um número entre 8 e 20"
-    ))
-    
-    try:
-        generator = GeneratorFactory.create_generator(generator_type)
-        password = generator.generate(length)
-        
-        print(f"\nGenerated Password: {password}")
-        print(f"Strength: {generator.get_strength()}")
-        
-        validation = PasswordValidator.validate(password)
-        print(PasswordValidator.get_validation_message(validation))
-    except ValueError as e:
-        print(f"\nError: {e}")
+    generator.add_observer(LoggingObserver())
+
+    # Gera senha
+    password = generator.generate(
+        int(get_valid_input(
+            "Comprimento (8-20): ",
+            lambda x: x.isdigit() and 8 <= int(x) <= 20,
+            "Digite um número entre 8 e 20"
+        ))
+    )
+
+    # Validação
+    validation = PasswordValidator.validate(password)
+    print(f"\nSenha: {password}")
+    print(f"Força: {generator.get_strength()}")
+    print(PasswordValidator.get_validation_message(validation))
 
 if __name__ == "__main__":
     main()

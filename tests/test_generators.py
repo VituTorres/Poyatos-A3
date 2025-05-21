@@ -36,3 +36,22 @@ class TestPasswordValidator(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+# tests/test_observers.py
+import unittest
+from io import StringIO
+import sys
+from src.observers.logging_observer import LoggingObserver
+
+class TestLoggingObserver(unittest.TestCase):
+    def setUp(self):
+        self.held_output = StringIO()
+        sys.stdout = self.held_output
+
+    def test_logging(self):
+        observer = LoggingObserver()
+        observer.on_password_generated("test123", "Medium")
+        self.assertIn("Nova senha gerada", self.held_output.getvalue())
+
+    def tearDown(self):
+        sys.stdout = sys.__stdout__    

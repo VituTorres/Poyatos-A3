@@ -1,16 +1,16 @@
-# README.md
-# Password Generator Refactoring Project
+# Password Generator Refactored
 
-Projeto acadêmico demonstrando a refatoração de um gerador de senhas, aplicando:
-- Princípios SOLID
-- Padrões de Design
-- Clean Code
-- Testes unitários
+## Novas Funcionalidades
+- **Padrão Observer**: Notifica quando senhas são geradas
+  - Exemplo: `LoggingObserver` registra em log
+- **Factory Simplificada**: Função direta em vez de classe
+- **Tratamento de Erros Aprimorado**
 
-## Estrutura
-- `legacy/`: Código original
-- `src/`: Código refatorado
-- `tests/`: Testes unitários
+## Como Usar
+```python
+from observers.logging_observer import LoggingObserver
+from generators.factory import create_generator
 
-## Pré-requisitos
-Python 3.8+
+generator = create_generator("strong")
+generator.add_observer(LoggingObserver())
+password = generator.generate(12)
