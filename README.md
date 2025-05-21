@@ -42,7 +42,7 @@ pip install -r requirements.txt
 
 ### Versão Refatorada
 ```bash
-python src/main.py
+python main.py
 ```
 ### Versão Legada
 ```bash
