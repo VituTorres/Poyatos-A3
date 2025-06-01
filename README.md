@@ -6,10 +6,6 @@
 
 ## Alunos
 - Victor Inocencio Torres RA:824213703
--
--
--
--
 
 Projeto acadêmico demonstrando a refatoração de um gerador de senhas
 ## 📋 Estrutura do Projeto
